@@ -1,4 +1,3 @@
-import re
 
 def parse_circuit_file(file_path):
     """
@@ -9,7 +8,7 @@ def parse_circuit_file(file_path):
     with open(file_path, 'r') as file:
         lines = file.readlines()
 
-    # Data structure to hold the parsed information.
+    # Dictionary to hold circuit information
     circuit_info = {
         "total_nodes": 0,
         "node_delays": [],
@@ -18,24 +17,24 @@ def parse_circuit_file(file_path):
     }
 
     for line in lines:
-        # Ignore comments and empty lines.
+        # Ignore comments and empty lines
         if line.startswith('//') or line.strip() == '':
             continue
 
-        # Split the line into key and value components.
+        # Split the line into key and value
         key, value = line.split('=')
-        value = value.strip()  # Remove any leading/trailing whitespace.
+        value = value.strip()  # Remove any leading/trailing whitespace
 
         if key == 'TotalNodes':
             circuit_info["total_nodes"] = int(value)
         elif key == 'NodeDelays':
-            # Split the delays and convert them to integers.
+            # Split the delays and convert them to integers
             circuit_info["node_delays"] = list(map(int, value.split(',')))
         elif key == 'MaxClockCycle':
             circuit_info["max_clock_cycle"] = int(value)
         else:
-            # We assume this is an edge delay entry. We'll parse the edge's name and delay.
-            # The edge's name is everything before the "=" character.
+            # If key doesn't match any of of the options above, this must
+            # be an edge delay entry. Parse the edge's name and delay value
             edge_name = key
             edge_delay = int(value)
             circuit_info["edge_delays"][edge_name] = edge_delay

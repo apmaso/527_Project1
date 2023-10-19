@@ -70,9 +70,12 @@ int main() {
     CircuitInfo circuit_info = parse_circuit_file(file_path);
 
     // Print information stored in the struct
+    // This is just to confirm functionality 
     std::cout << "Total Nodes: " << circuit_info.total_nodes << std::endl;
+    // std::cout << "Node Delays: " << circuit_info.node_delays << std::endl;
+    std::cout << "Max Clock Cycle: " << circuit_info.max_clock_cycle << std::endl;
+    // std::cout << "Edge Delays: " << circuit_info.edge_delays << std::endl;
 
-    // Don't forget to handle the rest of the data as per your requirements
 
     return 0;
 }

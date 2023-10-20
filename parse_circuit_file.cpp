@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <cstdlib> // for atoi
+#include <cstdlib> 
 
 // Struct to hold information parsed from the circuit file
 struct CircuitInfo {
@@ -19,7 +19,7 @@ CircuitInfo parse_circuit_file(const std::string& file_path) {
     std::ifstream file(file_path.c_str());
     if (!file.is_open()) {
         std::cerr << "Error opening file" << std::endl;
-        exit(EXIT_FAILURE); // Ensure you include <cstdlib>
+        exit(EXIT_FAILURE); // Ensure you include <cstdlib> -> ascii to int
     }
 
     CircuitInfo circuit_info = {0, {}, {}, 0}; // Initialize the struct
@@ -64,7 +64,7 @@ CircuitInfo parse_circuit_file(const std::string& file_path) {
 
 int main() {
     // Path to the circuit file
-    std::string file_path = "example_input.txt"; 
+    std::string file_path = "example_input2.txt"; 
 
     // Parse the circuit file 
     CircuitInfo circuit_info = parse_circuit_file(file_path);
@@ -72,9 +72,19 @@ int main() {
     // Print information stored in the struct
     // This is just to confirm functionality 
     std::cout << "Total Nodes: " << circuit_info.total_nodes << std::endl;
-    // std::cout << "Node Delays: " << circuit_info.node_delays << std::endl;
     std::cout << "Max Clock Cycle: " << circuit_info.max_clock_cycle << std::endl;
-    // std::cout << "Edge Delays: " << circuit_info.edge_delays << std::endl;
+    
+    std::cout << "Node Delays: ";
+    for (int node: circuit_info.node_delays)
+        std::cout << node << " ";
+    std::cout << std::endl;
+    
+FIXME:    
+/*    std::cout << "Edge Delays: ";
+    for (char edge: circuit_info.edge_delays)
+        std::cout << edge << " ";
+     std::cout << std::endl;
+*/
 
 
     return 0;

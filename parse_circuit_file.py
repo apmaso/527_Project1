@@ -44,6 +44,6 @@ def parse_circuit_file(file_path):
 
 # Bolierplate
 if __name__ == "__main__":
-    file_path_txt = 'example_input.txt'
+    file_path_txt = 'example_input2.txt'
     parsed_info = parse_circuit_file(file_path_txt)
     print(parsed_info)

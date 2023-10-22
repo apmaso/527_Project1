@@ -1,4 +1,6 @@
 
+import numpy as np
+
 def parse_circuit_file(file_path):
     """
     Parse the circuit file and extract relevant information.
@@ -40,6 +42,22 @@ def parse_circuit_file(file_path):
             circuit_info["edge_delays"][edge_name] = edge_delay
 
     return circuit_info
+
+def create_wmatrix(circuit_info):
+    """
+    Create initial W Matrix
+    
+    Populate matrix with edge weights from circuit info
+    """
+# Create a 2D array with n rows and columns
+size = circuit_info.get("total_nodes")
+
+# Populating matrices with zeros initially...
+# Will need to change to large value at some point=
+w_matrix = np.zeros((size,size))
+
+# Access or modify elements using array[row, col]
+
 
 
 # Bolierplate

@@ -73,6 +73,18 @@ def create_wmatrix(circuit_info):
         # Arrays start from 0. Row = (node-1) and Col = (node-1)
         w_matrix[i-1, j-1] = edge_delay
 
+    # Look at paths with 2 edges... starting with elems == 999
+    # Just to get the idea of how to implement... baby steps
+    for r in range(size):
+        for c in range(size):
+            if w_matrix[r, c]==999:
+                not_c = list(range(0,c))+list(range(c+1,size))
+                for i in not_c:
+                    if (w_matrix[r,i] + w_matrix[i,c]) < w_matrix[r,c]:
+                        w_matrix[r,c]=(w_matrix[r,i]+w_matrix[i,c])
+                    else:
+                        w_matrix[r,c]=w_matrix[r,c]
+
     return w_matrix
 
 

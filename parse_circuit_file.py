@@ -53,11 +53,15 @@ def create_wmatrix(circuit_info):
     # Create a 2D, square array with dimensions equal to the number of nodes
     # Populate this matrix with a high number as initial_value
     # This default value represents no path between the two nodes
-    dimension = circuit_info.get("total_nodes")
-    shape = (dimension, dimension)
+    size = circuit_info.get("total_nodes")
+    shape = (size, size)
     fill_value = 999
     w_matrix = np.full(shape,fill_value)
 
+    # All elements where row == col should be zero
+    # U==V -> W(u,v)==0
+    for n in range(size):
+        w_matrix[n, n] = 0
 
     # Modify elements in w-matrix using "edge_delays" dictionary in circuit_info
     # Access using edge_name as key and edge_delay as the value. 
@@ -75,7 +79,7 @@ def create_wmatrix(circuit_info):
 
 # Bolierplate
 if __name__ == "__main__":
-    file_path_txt = 'example_input2.txt'
+    file_path_txt = 'example_input.txt'
     parsed_info = parse_circuit_file(file_path_txt)
     w_matrix = create_wmatrix(parsed_info)
     print(parsed_info)

@@ -82,27 +82,37 @@ def create_wmatrix(circuit_info):
 
     # Look at paths with 2 edges first... baby steps
     # Just to get the idea of how to implement... 
-    for r in range(size):
-        for c in range(size):
-            not_c = list(range(0,c))+list(range(c+1,size))
-            for i in not_c:
-                if (w_matrix[1,r,i] + w_matrix[1,i,c]) < w_matrix[1,r,c]:
-                    w_matrix[1,r,c]=(w_matrix[1,r,i]+w_matrix[1,i,c])
-                else:
-                    w_matrix[1,r,c]=w_matrix[1,r,c]
+    ##for r in range(size):
+    ##    for c in range(size):
+    ##        not_c = list(range(0,c))+list(range(c+1,size))
+    ##        for i in not_c:
+    ##            if (w_matrix[1,r,i] + w_matrix[1,i,c]) < w_matrix[1,r,c]:
+    ##                w_matrix[1,r,c]=(w_matrix[1,r,i]+w_matrix[1,i,c])
+    ##            else:
+    ##                w_matrix[1,r,c]=w_matrix[1,r,c]
 
     # Look at paths with 3 edges next... baby steps
     # Just to get the idea of how to implement... 
-    for r in range(size):
-        for c in range(size):
-            not_c = list(range(0,c))+list(range(c+1,size))
-            for i in not_c:
-                for j in not_c:
-                    if (w_matrix[2,r,i] + w_matrix[2,i,j] + w_matrix[2,j,c]) < w_matrix[2,r,c]:
-                        w_matrix[2,r,c] = (w_matrix[2,r,i] + w_matrix[2,i,j] + w_matrix[2,j,c]) 
-                    else:
-                        w_matrix[2,r,c]=w_matrix[2,r,c]
+    ##for r in range(size):
+    ##    for c in range(size):
+    ##        not_c = list(range(0,c))+list(range(c+1,size))
+    ##        for i in not_c:
+    ##            for j in not_c:
+    ##                if (w_matrix[2,r,i] + w_matrix[2,i,j] + w_matrix[2,j,c]) < w_matrix[2,r,c]:
+    ##                    w_matrix[2,r,c] = (w_matrix[2,r,i] + w_matrix[2,i,j] + w_matrix[2,j,c]) 
+    ##                else:
+    ##                    w_matrix[2,r,c]=w_matrix[2,r,c]
 
+    # Attempt to parameterize 
+    for e in range(1,size-1):
+        for r in range(size):
+            for c in range(size):
+                not_c = list(range(0,c))+list(range(c+1,size))
+                for i in not_c:
+                        if (w_matrix[e,r,i] + w_matrix[e,i,c]) < w_matrix[e,r,c]:
+                            w_matrix[e,r,c] = (w_matrix[e,r,i] + w_matrix[e,i,c]) 
+                        else:
+                            w_matrix[e,r,c]=w_matrix[e,r,c]
 
     return w_matrix
 

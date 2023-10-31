@@ -86,7 +86,7 @@ def create_wmatrix(circuit_info):
                         else:
                             w_matrix[e,r,c]=w_matrix[e,r,c]
     
-    return w_matrix
+    return w_matrix[size-1]
 
 
 def create_gpmatrix(circuit_info):
@@ -125,7 +125,7 @@ def create_gpmatrix(circuit_info):
                         else:
                             gp_matrix[e,r,c]=gp_matrix[e,r,c]
     
-    return gp_matrix
+    return gp_matrix[size-1]
 
 
 def create_dmatrix(circuit_info, w_matrix, gp_matrix):
@@ -158,18 +158,16 @@ def create_dmatrix(circuit_info, w_matrix, gp_matrix):
 
     return d_matrix
 
-
+#def inequalities
 
 # Bolierplate
 if __name__ == "__main__":
-    file_path_txt = 'example_input2.txt'
+    file_path_txt = 'example_input.txt'
     parsed_info = parse_circuit_file(file_path_txt)
     w_matrix = create_wmatrix(parsed_info)
-    w_matrix_fin = w_matrix[3] 
     gp_matrix = create_gpmatrix(parsed_info)
-    gp_matrix_fin = gp_matrix[3] 
-    d_matrix = create_dmatrix(parsed_info,w_matrix_fin,gp_matrix_fin)
+    d_matrix = create_dmatrix(parsed_info,w_matrix,gp_matrix)
     print(parsed_info)
-    print(w_matrix_fin)
-    print(gp_matrix_fin)
+    print(w_matrix)
+    print(gp_matrix)
     print(d_matrix)

@@ -158,8 +158,26 @@ def create_dmatrix(circuit_info, w_matrix, gp_matrix):
 
     return d_matrix
 
-#def inequalities
 
+def inequalities(circuit_info, w_matrix, d_matrix):
+    """
+    Create Inequalities
+    
+    """
+    
+    size = circuit_info.get("total_nodes")
+    c_value = circuit_info.get("max_clock_cycle")
+
+    for i in range(size):
+        for j in range(size):
+            if d_matrix[i,j] > c_value:
+                print(f"r({i}) - r({j}) <= {w_matrix[i,j]-1}")
+            else:
+                continue
+               
+    return
+
+   
 # Bolierplate
 if __name__ == "__main__":
     file_path_txt = 'example_input.txt'
@@ -171,3 +189,5 @@ if __name__ == "__main__":
     print(w_matrix)
     print(gp_matrix)
     print(d_matrix)
+
+    inequalities(parsed_info,w_matrix,d_matrix)

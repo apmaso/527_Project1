@@ -162,7 +162,7 @@ def create_dmatrix(circuit_info, w_matrix, gp_matrix):
 
 # Bolierplate
 if __name__ == "__main__":
-    file_path_txt = 'example_input.txt'
+    file_path_txt = 'example_input2.txt'
     parsed_info = parse_circuit_file(file_path_txt)
     w_matrix = create_wmatrix(parsed_info)
     w_matrix_fin = w_matrix[3] 

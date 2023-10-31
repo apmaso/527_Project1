@@ -55,9 +55,6 @@ def create_wmatrix(circuit_info):
     size = circuit_info.get("total_nodes")
     shape = (size,size,size)
     fill_value = 999
-    
-    # Create 3D matrix for 1->3 edges per path
-    # Will need to parameterize... baby steps
     w_matrix = np.full(shape,fill_value)
 
     # All elements where row == col should be zero
@@ -72,8 +69,8 @@ def create_wmatrix(circuit_info):
     for edge_name, edge_delay in circuit_info["edge_delays"].items():
     
         # First four characters are always the same, 'Edge'
-        i, j = map(int, edge_name[4:])
         # Arrays start from 0. Row = (node-1) and Col = (node-1)
+        i, j = map(int, edge_name[4:])
         for e in range(size):
             w_matrix[e,i-1,j-1] = edge_delay
 
@@ -88,9 +85,47 @@ def create_wmatrix(circuit_info):
                             w_matrix[e,r,c] = (w_matrix[e-1,r,i] + w_matrix[e-1,i,c]) 
                         else:
                             w_matrix[e,r,c]=w_matrix[e,r,c]
-
+    
     return w_matrix
 
+
+def create_gpmatrix(circuit_info):
+    """
+    Create G-Prime Matrix
+    
+    Populate matrix with edge weights from circuit info
+    """
+    
+    # Create a 3D array with 3 dimensions equal to the number of nodes
+    # Populate this 3D array with a high number as initial value (999)
+    # This default value represents no path between the two nodes
+    size = circuit_info.get("total_nodes")
+    shape = (size,size,size)
+    fill_value = 999
+    gp_matrix = np.full(shape,fill_value)
+
+    # Initialize gp-matrix using edge_delays, node_delays and M 
+    node_delay = circuit_info.get("node_delays")
+    m_value = size * max(node_delay)
+    for edge_name, edge_delay in circuit_info["edge_delays"].items():
+    
+        i, j = map(int, edge_name[4:])
+        for e in range(size):
+            gp_matrix[e,i-1,j-1] = m_value * edge_delay - node_delay[i-1]
+ 
+    # Parameterized the algorithm by adding a 3rd dimension to my array
+    # e represents the maximum number of edges considered in any given path
+    for e in range(1,size):
+        for r in range(size):
+            for c in range(size):
+                not_c = list(range(0,c))+list(range(c+1,size))
+                for i in not_c:
+                        if (gp_matrix[e-1,r,i] + gp_matrix[e-1,i,c]) < gp_matrix[e,r,c]:
+                            gp_matrix[e,r,c] = (gp_matrix[e-1,r,i] + gp_matrix[e-1,i,c]) 
+                        else:
+                            gp_matrix[e,r,c]=gp_matrix[e,r,c]
+    
+    return gp_matrix
 
 
 # Bolierplate
@@ -98,5 +133,7 @@ if __name__ == "__main__":
     file_path_txt = 'example_input.txt'
     parsed_info = parse_circuit_file(file_path_txt)
     w_matrix = create_wmatrix(parsed_info)
+    gp_matrix = create_gpmatrix(parsed_info)
     print(parsed_info)
     print(w_matrix)
+    print(gp_matrix)

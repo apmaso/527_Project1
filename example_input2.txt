@@ -18,4 +18,4 @@ Edge46=5
 Edge24=4
 
 // Specifies the maximum clock cycle for the algorithm
-MaxClockCycle=3
+MaxClockCycle=2

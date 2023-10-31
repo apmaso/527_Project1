@@ -12,4 +12,4 @@ Edge32=0
 Edge42=0
 
 // Specifies the maximum clock cycle for the algorithm
-MaxClockCycle=3
+MaxClockCycle=2

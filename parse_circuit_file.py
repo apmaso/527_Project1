@@ -93,7 +93,7 @@ def create_gpmatrix(circuit_info):
     """
     Create G-Prime Matrix
     
-    Populate matrix with edge weights from circuit info
+    Populate initial matrix using w'(e)=m*w(e)-d(u)
     """
     
     # Create a 3D array with 3 dimensions equal to the number of nodes
@@ -128,12 +128,48 @@ def create_gpmatrix(circuit_info):
     return gp_matrix
 
 
+def create_dmatrix(circuit_info, w_matrix, gp_matrix):
+    """
+    Create D Matrix
+    
+    Populate matrix using D(u,v)=m*W(u,v)-G'(u,v)+d(v) 
+    """
+    
+    # Create a 3D array with 3 dimensions equal to the number of nodes
+    # Populate this 3D array with a high number as initial value (999)
+    # This default value represents no path between the two nodes
+    size = circuit_info.get("total_nodes")
+    shape = (size,size)
+
+    # Initialize d-matrix with zeros 
+    # All elements where row == col should be zero
+    # U==V -> W(u,v)==0
+    fill_value = 999
+    d_matrix = np.full(shape,fill_value)
+
+    node_delay = circuit_info.get("node_delays")
+    m_value = size * max(node_delay)
+    for i in range(size):
+        for j in range(size):
+            if i != j:
+                d_matrix[i-1,j-1] = m_value * w_matrix[i-1,j-1] - gp_matrix[i-1,j-1] + node_delay[j-1]
+            else:
+                d_matrix[i-1,j-1] = node_delay[i-1]
+
+    return d_matrix
+
+
+
 # Bolierplate
 if __name__ == "__main__":
     file_path_txt = 'example_input.txt'
     parsed_info = parse_circuit_file(file_path_txt)
     w_matrix = create_wmatrix(parsed_info)
+    w_matrix_fin = w_matrix[3] 
     gp_matrix = create_gpmatrix(parsed_info)
+    gp_matrix_fin = gp_matrix[3] 
+    d_matrix = create_dmatrix(parsed_info,w_matrix_fin,gp_matrix_fin)
     print(parsed_info)
-    print(w_matrix)
-    print(gp_matrix)
+    print(w_matrix_fin)
+    print(gp_matrix_fin)
+    print(d_matrix)

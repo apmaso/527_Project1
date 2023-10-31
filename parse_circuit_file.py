@@ -1,4 +1,3 @@
-
 import numpy as np
 
 def parse_circuit_file(file_path):
@@ -50,13 +49,11 @@ def create_wmatrix(circuit_info):
     Populate matrix with edge weights from circuit info
     """
 
-    # Create a 3D array with 2 dimensions equal to the number of nodes
-    # And 1 dimension equal to one less than the number of nodes 
-    # ***This might need to change to 3D, cube array (equal dim)***
-    # Populate this matrix with a high number as initial_value
+    # Create a 3D array with 3 dimensions equal to the number of nodes
+    # Populate this 3D array with a high number as initial value (999)
     # This default value represents no path between the two nodes
     size = circuit_info.get("total_nodes")
-    shape = (size-1,size, size)
+    shape = (size,size,size)
     fill_value = 999
     
     # Create 3D matrix for 1->3 edges per path
@@ -65,7 +62,7 @@ def create_wmatrix(circuit_info):
 
     # All elements where row == col should be zero
     # U==V -> W(u,v)==0
-    for e in range(size-1):
+    for e in range(size):
         for n in range(size):
             w_matrix[e,n,n] = 0
 
@@ -77,40 +74,18 @@ def create_wmatrix(circuit_info):
         # First four characters are always the same, 'Edge'
         i, j = map(int, edge_name[4:])
         # Arrays start from 0. Row = (node-1) and Col = (node-1)
-        for e in range(size-1):
+        for e in range(size):
             w_matrix[e,i-1,j-1] = edge_delay
 
-    # Look at paths with 2 edges first... baby steps
-    # Just to get the idea of how to implement... 
-    ##for r in range(size):
-    ##    for c in range(size):
-    ##        not_c = list(range(0,c))+list(range(c+1,size))
-    ##        for i in not_c:
-    ##            if (w_matrix[1,r,i] + w_matrix[1,i,c]) < w_matrix[1,r,c]:
-    ##                w_matrix[1,r,c]=(w_matrix[1,r,i]+w_matrix[1,i,c])
-    ##            else:
-    ##                w_matrix[1,r,c]=w_matrix[1,r,c]
-
-    # Look at paths with 3 edges next... baby steps
-    # Just to get the idea of how to implement... 
-    ##for r in range(size):
-    ##    for c in range(size):
-    ##        not_c = list(range(0,c))+list(range(c+1,size))
-    ##        for i in not_c:
-    ##            for j in not_c:
-    ##                if (w_matrix[2,r,i] + w_matrix[2,i,j] + w_matrix[2,j,c]) < w_matrix[2,r,c]:
-    ##                    w_matrix[2,r,c] = (w_matrix[2,r,i] + w_matrix[2,i,j] + w_matrix[2,j,c]) 
-    ##                else:
-    ##                    w_matrix[2,r,c]=w_matrix[2,r,c]
-
-    # Attempt to parameterize 
-    for e in range(1,size-1):
+    # Parameterized the algorithm by adding a 3rd dimension to my array
+    # e represents the maximum number of edges considered in any given path
+    for e in range(1,size):
         for r in range(size):
             for c in range(size):
                 not_c = list(range(0,c))+list(range(c+1,size))
                 for i in not_c:
-                        if (w_matrix[e,r,i] + w_matrix[e,i,c]) < w_matrix[e,r,c]:
-                            w_matrix[e,r,c] = (w_matrix[e,r,i] + w_matrix[e,i,c]) 
+                        if (w_matrix[e-1,r,i] + w_matrix[e-1,i,c]) < w_matrix[e,r,c]:
+                            w_matrix[e,r,c] = (w_matrix[e-1,r,i] + w_matrix[e-1,i,c]) 
                         else:
                             w_matrix[e,r,c]=w_matrix[e,r,c]
 

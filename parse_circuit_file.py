@@ -166,27 +166,43 @@ def inequalities(circuit_info, w_matrix, d_matrix):
     
     size = circuit_info.get("total_nodes")
     c_value = circuit_info.get("max_clock_cycle")
+    node_delay = circuit_info.get("node_delays")
 
-    for i in range(size):
-        for j in range(size):
-            if d_matrix[i,j] > c_value:
-                print(f"r({i+1}) - r({j+1}) <= {w_matrix[i,j]-1}")
-            else:
-                continue
+    while c_value >= max(node_delay):
+        print("----------------------------------------")
+        print(f"   Set of Inequalities for C = {c_value}")
+        print("----------------------------------------")
+        for i in range(size):
+            for j in range(size):
+                if d_matrix[i,j] > c_value:
+                    print(f"r({i+1}) - r({j+1}) <= {w_matrix[i,j]-1}")
+                else:
+                    continue
     
+        c_value = c_value-1
+
     return
 
    
 # Bolierplate
 if __name__ == "__main__":
-    file_path_txt = 'example_input2.txt'
+    file_path_txt = 'example_input.txt'
     parsed_info = parse_circuit_file(file_path_txt)
     w_matrix = create_wmatrix(parsed_info)
     gp_matrix = create_gpmatrix(parsed_info)
     d_matrix = create_dmatrix(parsed_info,w_matrix,gp_matrix)
     print(parsed_info)
+    print("----------------------------------------")
+    print("                W Matrix                ")
+    print("----------------------------------------")
     print(w_matrix)
+    print("----------------------------------------")
+    print("                G' Matrix               ")
+    print("----------------------------------------")
     print(gp_matrix)
+    print("----------------------------------------")
+    print("                D Matrix                ")
+    print("----------------------------------------")
     print(d_matrix)
 
     inequalities(parsed_info,w_matrix,d_matrix)

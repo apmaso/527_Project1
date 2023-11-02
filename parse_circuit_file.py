@@ -168,25 +168,84 @@ def inequalities(circuit_info, w_matrix, d_matrix):
     c_value = circuit_info.get("max_clock_cycle")
     node_delay = circuit_info.get("node_delays")
 
+
+
+    # Create a 3D array with 3 dimensions equal to the number of nodes
+    # Populate this 3D array with a high number as initial value (999)
+    # This array will be used to store and remove redundant inequalites
+    # 1 Dimension will represent each new set of inequalites
+    # TODO: The third dimension should be set by inital c_value and the maximum node delay
+    ineq_sets = c_value-max(node_delay)+3
+    shape = (ineq_sets,size,size)
+    fill_value = 999
+    ineq_matrix = np.full(shape,fill_value)
+
+
+    # Display the initial inequalites created from
+    # the initial values of our node delays
+    # edge_name ends in two integers: first=row, second=col 
+    print("----------------------------------------")
+    print(f"      Set of Initial Inequalities       ")
+    print("----------------------------------------")
+    for edge_name, edge_delay in circuit_info["edge_delays"].items():
+    
+        # First four characters are always the same, 'Edge'
+        i, j = map(int, edge_name[4:])
+        print(f"r({i}) - r({j}) <= {edge_delay}")
+        ineq_matrix[0,i-1,j-1] = edge_delay
+
+
+
+    # Display all inequalities created from starting c_value
+    # Decrement c & repeat while c >= max node delay in our circuit
+    # TODO: Will need to update range of g to reflect num of sets possible
+    g = 1
     while c_value >= max(node_delay):
         print("----------------------------------------")
-        print(f"   Set of Inequalities for C = {c_value}")
+        print(f" Set of Inequalities for C = {c_value}  ")
         print("----------------------------------------")
         for i in range(size):
             for j in range(size):
                 if d_matrix[i,j] > c_value:
                     print(f"r({i+1}) - r({j+1}) <= {w_matrix[i,j]-1}")
+                    ineq_matrix[g,i,j] = w_matrix[i,j]-1
                 else:
                     continue
-    
+        g = g + 1
         c_value = c_value-1
+    
+    # Lets use the same algorithm to reduce/remove redundancies
+    # For now I am going to use gen=3 or the 4th gen of my ineqs
+    # to remove redundancies. Will need to parameterize this later
+    for e in range(ineq_sets-1):
+        for r in range(size):
+            for c in range(size):
+                if ineq_matrix[e,r,c] < ineq_matrix[ineq_sets-1,r,c]:
+                    ineq_matrix[ineq_sets-1,r,c] = ineq_matrix[e,r,c] 
+                else:
+                    continue 
+    
+
+    # Display our reduced set of inequalities
+    print("----------------------------------------")
+    print(f"      Set of Reduced Inequalities       ")
+    print("----------------------------------------")
+    
+    for k in range(size):
+        for l in range(size):
+            if ineq_matrix[ineq_sets-1,k,l] != 999:
+                print(f"r({k+1}) - r({l+1}) <= {ineq_matrix[ineq_sets-1,k,l]}")
+            else:
+                continue
+
+
 
     return
 
    
 # Bolierplate
 if __name__ == "__main__":
-    file_path_txt = 'example_input.txt'
+    file_path_txt = 'example_input2.txt'
     parsed_info = parse_circuit_file(file_path_txt)
     w_matrix = create_wmatrix(parsed_info)
     gp_matrix = create_gpmatrix(parsed_info)

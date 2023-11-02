@@ -234,8 +234,47 @@ def inequalities(circuit_info, w_matrix, d_matrix):
                 continue
 
 
-
     return ineq_matrix[ineq_sets-1]
+
+def constraint_graph(circuit_info,ineq_matrix):
+    """
+    Represent constraint graph with a matrix
+    Constraint graph has one additional node
+    Populate matrix from ineq_matrix but swap U <=> V
+    """
+
+    # Trying with only 1 dimensions equal to the number of nodes+1
+    size = circuit_info.get("total_nodes")
+    shape = (size,size+1,size)
+    fill_value = 999
+    constraint_matrix = np.full(shape,fill_value)
+
+
+    # Fill all layers with cells from ineq_matrix, switching U and V
+    # Fill the extra row with 0s
+    for g in range(size):
+ 
+        for n in range(size):
+            constraint_matrix[g,size,n] = 0
+
+        for i in range(size):
+            for j in range(size):
+                constraint_matrix[g,i,j] = ineq_matrix[j,i]
+
+    # Parameterized the algorithm by adding a 3rd dimension to my array
+    # g represents the each generation of matrix the algorithm creates
+    for g in range(1,size):
+        for r in range(size+1):
+            for c in range(size):
+                not_c = list(range(0,c))+list(range(c+1,size))
+                for i in not_c:
+                        if (constraint_matrix[g-1,r,i] + constraint_matrix[g-1,i,c]) < constraint_matrix[g,r,c]:
+                            constraint_matrix[g,r,c] = (constraint_matrix[g-1,r,i] + constraint_matrix[g-1,i,c]) 
+                        else:
+                            constraint_matrix[g,r,c]=constraint_matrix[g,r,c]
+    
+    return constraint_matrix
+
 
    
 # Bolierplate
@@ -258,5 +297,9 @@ if __name__ == "__main__":
     print("                D Matrix                ")
     print("----------------------------------------")
     print(d_matrix)
+    
 
-    inequalities(parsed_info,w_matrix,d_matrix)
+    ineq_matrix = inequalities(parsed_info,w_matrix,d_matrix)
+
+    constraint_matrix = constraint_graph(parsed_info,ineq_matrix)
+    print(constraint_matrix)

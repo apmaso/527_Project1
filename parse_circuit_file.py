@@ -174,7 +174,6 @@ def inequalities(circuit_info, w_matrix, d_matrix):
     # Populate this 3D array with a high number as initial value (999)
     # This array will be used to store and remove redundant inequalites
     # 1 Dimension will represent each new set of inequalites
-    # TODO: The third dimension should be set by inital c_value and the maximum node delay
     ineq_sets = c_value-max(node_delay)+3
     shape = (ineq_sets,size,size)
     fill_value = 999
@@ -195,10 +194,8 @@ def inequalities(circuit_info, w_matrix, d_matrix):
         ineq_matrix[0,i-1,j-1] = edge_delay
 
 
-
     # Display all inequalities created from starting c_value
     # Decrement c & repeat while c >= max node delay in our circuit
-    # TODO: Will need to update range of g to reflect num of sets possible
     g = 1
     while c_value >= max(node_delay):
         print("----------------------------------------")
@@ -214,10 +211,8 @@ def inequalities(circuit_info, w_matrix, d_matrix):
         g = g + 1
         c_value = c_value-1
     
-    # Lets use the same algorithm to reduce/remove redundancies
-    # For now I am going to use gen=3 or the 4th gen of my ineqs
-    # to remove redundancies. Will need to parameterize this later
-    for e in range(ineq_sets-1):
+    # Compare cells across one axis to reduce/remove redundant ineq
+    for e in range(1,ineq_sets-1):
         for r in range(size):
             for c in range(size):
                 if ineq_matrix[e,r,c] < ineq_matrix[ineq_sets-1,r,c]:
@@ -228,7 +223,7 @@ def inequalities(circuit_info, w_matrix, d_matrix):
 
     # Display our reduced set of inequalities
     print("----------------------------------------")
-    print(f"      Set of Reduced Inequalities       ")
+    print(f"      Reduced Set of Inequalities       ")
     print("----------------------------------------")
     
     for k in range(size):
@@ -240,12 +235,12 @@ def inequalities(circuit_info, w_matrix, d_matrix):
 
 
 
-    return
+    return ineq_matrix[ineq_sets-1]
 
    
 # Bolierplate
 if __name__ == "__main__":
-    file_path_txt = 'example_input2.txt'
+    file_path_txt = 'example_input.txt'
     parsed_info = parse_circuit_file(file_path_txt)
     w_matrix = create_wmatrix(parsed_info)
     gp_matrix = create_gpmatrix(parsed_info)

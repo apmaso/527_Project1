@@ -86,7 +86,7 @@ def create_wmatrix(circuit_info):
                         else:
                             w_matrix[e,r,c]=w_matrix[e,r,c]
     
-    return w_matrix[size-1]
+    return w_matrix
 
 
 def create_gpmatrix(circuit_info):
@@ -125,7 +125,7 @@ def create_gpmatrix(circuit_info):
                         else:
                             gp_matrix[e,r,c]=gp_matrix[e,r,c]
     
-    return gp_matrix[size-1]
+    return gp_matrix
 
 
 def create_dmatrix(circuit_info, w_matrix, gp_matrix):
@@ -141,7 +141,7 @@ def create_dmatrix(circuit_info, w_matrix, gp_matrix):
     size = circuit_info.get("total_nodes")
     shape = (size,size)
 
-    # Initialize d-matrix with zeros 
+    # Initialize d-matrix 
     # All elements where row == col should be zero
     # U==V -> W(u,v)==0
     fill_value = 999
@@ -234,7 +234,7 @@ def inequalities(circuit_info, w_matrix, d_matrix):
                 continue
 
 
-    return ineq_matrix[ineq_sets-1]
+    return ineq_matrix
 
 def constraint_graph(circuit_info,ineq_matrix):
     """
@@ -277,29 +277,70 @@ def constraint_graph(circuit_info,ineq_matrix):
 
 
    
-# Bolierplate
+# Run the thing and do the stuff 
 if __name__ == "__main__":
     file_path_txt = 'example_input2.txt'
     parsed_info = parse_circuit_file(file_path_txt)
+    last_gen = parsed_info.get("total_nodes")-1
+    c_value = parsed_info.get("max_clock_cycle")
+    node_delay = parsed_info.get("node_delays")
+    reduced_ineq = c_value-max(node_delay)+2
+    
     w_matrix = create_wmatrix(parsed_info)
     gp_matrix = create_gpmatrix(parsed_info)
-    d_matrix = create_dmatrix(parsed_info,w_matrix,gp_matrix)
+    d_matrix = create_dmatrix(parsed_info,w_matrix[last_gen],gp_matrix[last_gen])
+    
+    # Will need to call inequalities matrix as well as contraing
+    # matrix calculation here to help group items for readability
+
+    
     print(parsed_info)
+    
     print("----------------------------------------")
     print("                W Matrix                ")
     print("----------------------------------------")
-    print(w_matrix)
+    user_input = input("Would you like to see the generations?(y/n)")
+    if user_input == 'y':
+        print(w_matrix)
+    elif user_input == 'n':
+        print(w_matrix[last_gen])
+    else:
+        print("Invalid response, only displaying final gen by default")
+        print(w_matrix[last_gen])
+
     print("----------------------------------------")
     print("                G' Matrix               ")
     print("----------------------------------------")
-    print(gp_matrix)
+    user_input = input("Would you like to see the generations?(y/n)")
+    if user_input == 'y':
+        print(gp_matrix)
+    elif user_input == 'n':
+        print(gp_matrix[last_gen])
+    else:
+        print("Invalid response, only displaying final gen by default")
+        print(gp_matrix[last_gen])
+
     print("----------------------------------------")
     print("                D Matrix                ")
     print("----------------------------------------")
     print(d_matrix)
     
-
-    ineq_matrix = inequalities(parsed_info,w_matrix,d_matrix)
-
-    constraint_matrix = constraint_graph(parsed_info,ineq_matrix)
-    print(constraint_matrix)
+    ineq_matrix = inequalities(parsed_info,w_matrix[last_gen],d_matrix)
+    constraint_matrix = constraint_graph(parsed_info,ineq_matrix[reduced_ineq])
+    
+    print("----------------------------------------")
+    print("           Constraint Matrix            ")
+    print("----------------------------------------")
+    user_input = input("Would you like to see the generations?(y/n)")
+    if user_input == 'y':
+        print(constraint_matrix)
+    elif user_input == 'n':
+        print(constraint_matrix[last_gen])
+    else:
+        print("Invalid response, only displaying final gen by default")
+        print(constraint_matrix[last_gen]) 
+    
+    print("----------------------------------------")
+    print("            Retiming Vector             ")
+    print("----------------------------------------")
+    print(constraint_matrix[last_gen][last_gen+1]) 

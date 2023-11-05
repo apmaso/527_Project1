@@ -2,12 +2,12 @@
 TotalNodes=6
 
 // Specifies the delay for each node in the graph
-NodeDelays=1,1,2,2,3,3
+NodeDelays=1,1,5,2,3,3
 
 // Specifies the delay for each edge between nodes in the graph
-Edge13=1
+Edge13=4
 Edge15=2
-Edge21=1
+Edge24=1
 Edge32=8
 Edge42=7
 Edge53=1

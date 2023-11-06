@@ -159,7 +159,7 @@ def create_dmatrix(circuit_info, w_matrix, gp_matrix):
     return d_matrix
 
 
-def inequalities(circuit_info, w_matrix, d_matrix):
+def ineq_matrix(circuit_info, w_matrix, d_matrix):
     """
     Create and Print Inequalities
     """
@@ -172,51 +172,72 @@ def inequalities(circuit_info, w_matrix, d_matrix):
 
     # Create a 3D array with 3 dimensions equal to the number of nodes
     # Populate this 3D array with a high number as initial value (999)
-    # This array will be used to store and remove redundant inequalites
-    # 1 Dimension will represent each new set of inequalites
-    ineq_sets = c_value-max(node_delay)+3
+    # This array will be used to store the sets of inequalites created 
+    # 1 axis will represent each new set of inequalites
+    ineq_sets = c_value-max(node_delay)+2
     shape = (ineq_sets,size,size)
     fill_value = 999
     ineq_matrix = np.full(shape,fill_value)
 
 
-    # Display the initial inequalites created from
-    # the initial values of our node delays
-    # edge_name ends in two integers: first=row, second=col 
-    print("----------------------------------------")
-    print(f"      Set of Initial Inequalities       ")
-    print("----------------------------------------")
+    # Store the inequalities in a 3D array with the initial set 
+    # of inequalities as layer/generation 0 and then each new layer
+    # representing inequalites for our decrementing c_value
     for edge_name, edge_delay in circuit_info["edge_delays"].items():
     
         # First four characters are always the same, 'Edge'
         i, j = map(int, edge_name[4:])
-        print(f"r({i}) - r({j}) <= {edge_delay}")
         ineq_matrix[0,i-1,j-1] = edge_delay
 
 
-    # Display all inequalities created from starting c_value
+    # Compare D and W matrices to create each new set of inequalities
     # Decrement c & repeat while c >= max node delay in our circuit
+    # Store each new matrix as a new layer/generation along axis 0
     g = 1
     while c_value >= max(node_delay):
-        print("----------------------------------------")
-        print(f" Set of Inequalities for C = {c_value}  ")
-        print("----------------------------------------")
         for i in range(size):
             for j in range(size):
                 if d_matrix[i,j] > c_value:
-                    print(f"r({i+1}) - r({j+1}) <= {w_matrix[i,j]-1}")
                     ineq_matrix[g,i,j] = w_matrix[i,j]-1
                 else:
                     continue
         g = g + 1
         c_value = c_value-1
     
+
+    return ineq_matrix
+
+
+def reduced_ineq(circuit_info, ineq_matrix, new_c_value):
+    """
+    Takes matrix of all sets of inequalities from initial set down to
+    the desired max clock cylce and compiles them in to a single matrix, 
+    removing ay redundancies
+    """
+ 
+    size = circuit_info.get("total_nodes")
+    c_value = circuit_info.get("max_clock_cycle")
+    node_delay = circuit_info.get("node_delays")
+
+
+
+    # Create a 2D array with 2 dimensions equal to the number of nodes
+    # Populate this 2D array with a high number as initial value (999)
+    # This array will be used remove redundant inequalites
+    sets_to_reduce = c_value - new_c_value + 2
+    shape = (size,size)
+    fill_value = 999
+    reduced_ineq = np.full(shape,fill_value)
+
+
+
+
     # Compare cells across one axis to reduce/remove redundant ineq
-    for e in range(1,ineq_sets-1):
+    for g in range(sets_to_reduce):
         for r in range(size):
             for c in range(size):
-                if ineq_matrix[e,r,c] < ineq_matrix[ineq_sets-1,r,c]:
-                    ineq_matrix[ineq_sets-1,r,c] = ineq_matrix[e,r,c] 
+                if ineq_matrix[g,r,c] < reduced_ineq[r,c]:
+                    reduced_ineq[r,c] = ineq_matrix[g,r,c] 
                 else:
                     continue 
     
@@ -228,13 +249,14 @@ def inequalities(circuit_info, w_matrix, d_matrix):
     
     for k in range(size):
         for l in range(size):
-            if ineq_matrix[ineq_sets-1,k,l] != 999:
-                print(f"r({k+1}) - r({l+1}) <= {ineq_matrix[ineq_sets-1,k,l]}")
+            if reduced_ineq[k,l] != 999:
+                print(f"r({k+1}) - r({l+1}) <= {reduced_ineq[k,l]}")
             else:
                 continue
 
+    return reduced_ineq
 
-    return ineq_matrix
+
 
 def constraint_graph(circuit_info,ineq_matrix):
     """
@@ -284,7 +306,7 @@ if __name__ == "__main__":
     last_gen = parsed_info.get("total_nodes")-1
     c_value = parsed_info.get("max_clock_cycle")
     node_delay = parsed_info.get("node_delays")
-    reduced_ineq = c_value-max(node_delay)+2
+    #reduced_ineq = c_value-max(node_delay)+2
     
     w_matrix = create_wmatrix(parsed_info)
     gp_matrix = create_gpmatrix(parsed_info)
@@ -325,22 +347,28 @@ if __name__ == "__main__":
     print("----------------------------------------")
     print(d_matrix)
     
-    ineq_matrix = inequalities(parsed_info,w_matrix[last_gen],d_matrix)
-    constraint_matrix = constraint_graph(parsed_info,ineq_matrix[reduced_ineq])
-    
-    print("----------------------------------------")
-    print("           Constraint Matrix            ")
-    print("----------------------------------------")
-    user_input = input("Would you like to see the generations?(y/n)")
-    if user_input == 'y':
-        print(constraint_matrix)
-    elif user_input == 'n':
-        print(constraint_matrix[last_gen])
-    else:
-        print("Invalid response, only displaying final gen by default")
-        print(constraint_matrix[last_gen]) 
-    
-    print("----------------------------------------")
-    print("            Retiming Vector             ")
-    print("----------------------------------------")
-    print(constraint_matrix[last_gen][last_gen+1]) 
+    ineq_matrix = ineq_matrix(parsed_info,w_matrix[last_gen],d_matrix)
+
+    # TODO: This is not set up to handle inproper input
+    new_c_value = int(input("What new c_value would you like to try?"))
+    reduced_ineq = reduced_ineq(parsed_info,ineq_matrix,new_c_value)
+
+
+#    constraint_matrix = constraint_graph(parsed_info,ineq_matrix[reduced_ineq])
+#    
+#    print("----------------------------------------")
+#    print("           Constraint Matrix            ")
+#    print("----------------------------------------")
+#    user_input = input("Would you like to see the generations?(y/n)")
+#    if user_input == 'y':
+#        print(constraint_matrix)
+#    elif user_input == 'n':
+#        print(constraint_matrix[last_gen])
+#    else:
+#        print("Invalid response, only displaying final gen by default")
+#        print(constraint_matrix[last_gen]) 
+#    
+#    print("----------------------------------------")
+#    print("            Retiming Vector             ")
+#    print("----------------------------------------")
+#    print(constraint_matrix[last_gen][last_gen+1]) 

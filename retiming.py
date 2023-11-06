@@ -301,12 +301,11 @@ def constraint_graph(circuit_info,ineq_matrix):
    
 # Run the thing and do the stuff 
 if __name__ == "__main__":
-    file_path_txt = 'example_input2.txt'
+    file_path_txt = 'example_input.txt'
     parsed_info = parse_circuit_file(file_path_txt)
     last_gen = parsed_info.get("total_nodes")-1
     c_value = parsed_info.get("max_clock_cycle")
     node_delay = parsed_info.get("node_delays")
-    #reduced_ineq = c_value-max(node_delay)+2
     
     w_matrix = create_wmatrix(parsed_info)
     gp_matrix = create_gpmatrix(parsed_info)
@@ -354,21 +353,21 @@ if __name__ == "__main__":
     reduced_ineq = reduced_ineq(parsed_info,ineq_matrix,new_c_value)
 
 
-#    constraint_matrix = constraint_graph(parsed_info,ineq_matrix[reduced_ineq])
-#    
-#    print("----------------------------------------")
-#    print("           Constraint Matrix            ")
-#    print("----------------------------------------")
-#    user_input = input("Would you like to see the generations?(y/n)")
-#    if user_input == 'y':
-#        print(constraint_matrix)
-#    elif user_input == 'n':
-#        print(constraint_matrix[last_gen])
-#    else:
-#        print("Invalid response, only displaying final gen by default")
-#        print(constraint_matrix[last_gen]) 
-#    
-#    print("----------------------------------------")
-#    print("            Retiming Vector             ")
-#    print("----------------------------------------")
-#    print(constraint_matrix[last_gen][last_gen+1]) 
+    constraint_matrix = constraint_graph(parsed_info,reduced_ineq)
+    
+    print("----------------------------------------")
+    print("           Constraint Matrix            ")
+    print("----------------------------------------")
+    user_input = input("Would you like to see the generations?(y/n)")
+    if user_input == 'y':
+        print(constraint_matrix)
+    elif user_input == 'n':
+        print(constraint_matrix[last_gen])
+    else:
+        print("Invalid response, only displaying final gen by default")
+        print(constraint_matrix[last_gen]) 
+    
+    print("----------------------------------------")
+    print("            Retiming Vector             ")
+    print("----------------------------------------")
+    print(constraint_matrix[last_gen][last_gen+1]) 

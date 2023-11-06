@@ -306,6 +306,7 @@ if __name__ == "__main__":
     last_gen = parsed_info.get("total_nodes")-1
     c_value = parsed_info.get("max_clock_cycle")
     node_delay = parsed_info.get("node_delays")
+    size = parsed_info.get("total_nodes")
     
     w_matrix = create_wmatrix(parsed_info)
     gp_matrix = create_gpmatrix(parsed_info)
@@ -316,11 +317,11 @@ if __name__ == "__main__":
 
     
     print(parsed_info)
+    user_input = input("Would you like to see the generations?(y/n)")
     
     print("----------------------------------------")
     print("                W Matrix                ")
     print("----------------------------------------")
-    user_input = input("Would you like to see the generations?(y/n)")
     if user_input == 'y':
         print(w_matrix)
     elif user_input == 'n':
@@ -332,7 +333,6 @@ if __name__ == "__main__":
     print("----------------------------------------")
     print("                G' Matrix               ")
     print("----------------------------------------")
-    user_input = input("Would you like to see the generations?(y/n)")
     if user_input == 'y':
         print(gp_matrix)
     elif user_input == 'n':
@@ -358,7 +358,6 @@ if __name__ == "__main__":
     print("----------------------------------------")
     print("           Constraint Matrix            ")
     print("----------------------------------------")
-    user_input = input("Would you like to see the generations?(y/n)")
     if user_input == 'y':
         print(constraint_matrix)
     elif user_input == 'n':
@@ -370,4 +369,23 @@ if __name__ == "__main__":
     print("----------------------------------------")
     print("            Retiming Vector             ")
     print("----------------------------------------")
-    print(constraint_matrix[last_gen][last_gen+1]) 
+    retiming_vector = constraint_matrix[last_gen][last_gen+1] 
+    print(retiming_vector)
+
+    retimed_matrix = ineq_matrix[0]
+    user_input = input("Would you like to use this retiming vector?(y/n)")
+    if user_input == 'y':
+        for r in range(size):
+            for c in range(size):
+                if retimed_matrix[r,c] != 999:
+                    retimed_matrix[r,c] = retimed_matrix[r,c] - retiming_vector[r]
+                if retimed_matrix[c,r] != 999:
+                    retimed_matrix[c,r] = retimed_matrix[c,r] + retiming_vector[r]
+        print("----------------------------------------")
+        print("            Retimed Circuit             ")
+        print("----------------------------------------")
+        print(retimed_matrix)
+    elif user_input == 'n':
+        print("Done!")
+    else:
+        print("Invalid response, ending script")

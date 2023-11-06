@@ -297,6 +297,31 @@ def constraint_graph(circuit_info,ineq_matrix):
     
     return constraint_matrix
 
+def retimed_circuit_file(circuit_info, new_c_value, retimed_matrix, new_file_path):
+
+    size = circuit_info.get("total_nodes") 
+    with open(new_file_path, 'w') as file:
+        # Write the total number of nodes
+        file.write("// Specifies the total number of nodes in the graph\n")
+        file.write(f"TotalNodes={size}\n\n")
+        
+        # Write the delays for each node
+        file.write("// Specifies the delay for each node in the graph\n")
+        node_delays = ','.join(map(str, circuit_info['node_delays']))
+        file.write(f"NodeDelays={node_delays}\n\n")
+        
+        # Write the delays for each edge
+        file.write("// Specifies the delay for each edge between nodes in the graph\n")
+        for edge, delay in circuit_info['edge_delays'].items():
+            i, j = map(int, edge[4:])
+            file.write(f"{edge}={retimed_matrix[i-1][j-1]}\n")
+        
+        # Write the maximum clock cycle
+        file.write("\n// Specifies the maximum clock cycle for the algorithm\n")
+        file.write(f"MaxClockCycle={new_c_value}\n")
+    
+    return
+
 
    
 # Run the thing and do the stuff 
@@ -315,9 +340,12 @@ if __name__ == "__main__":
     # Will need to call inequalities matrix as well as contraing
     # matrix calculation here to help group items for readability
 
-    
+    print("----------------------------------------")
+    print("          Initial Circuit Info          ")
+    print("----------------------------------------")
     print(parsed_info)
-    user_input = input("Would you like to see the generations?(y/n)")
+    
+    user_input = input("Would you like to see the matrix generations?(y/n)")
     
     print("----------------------------------------")
     print("                W Matrix                ")
@@ -389,3 +417,7 @@ if __name__ == "__main__":
         print("Done!")
     else:
         print("Invalid response, ending script")
+
+
+    new_file_path = 'retimed_circuit.txt'
+    retimed_circuit_file(parsed_info,new_c_value,retimed_matrix,new_file_path)

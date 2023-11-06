@@ -327,6 +327,7 @@ def retimed_circuit_file(circuit_info, new_c_value, retimed_matrix, new_file_pat
 # Run the thing and do the stuff 
 if __name__ == "__main__":
     file_path_txt = 'example_input.txt'
+    new_file_path = 'retimed_circuit.txt'
     parsed_info = parse_circuit_file(file_path_txt)
     last_gen = parsed_info.get("total_nodes")-1
     c_value = parsed_info.get("max_clock_cycle")
@@ -401,8 +402,8 @@ if __name__ == "__main__":
     print(retiming_vector)
 
     retimed_matrix = ineq_matrix[0]
-    user_input = input("Would you like to use this retiming vector?(y/n)")
-    if user_input == 'y':
+    retime = input("Would you like to use this retiming vector?(y/n)")
+    if retime == 'y':
         for r in range(size):
             for c in range(size):
                 if retimed_matrix[r,c] != 999:
@@ -413,11 +414,17 @@ if __name__ == "__main__":
         print("            Retimed Circuit             ")
         print("----------------------------------------")
         print(retimed_matrix)
-    elif user_input == 'n':
+    elif retime == 'n':
+        print("Not using retiming vector")
+    else:
+        print("Invalid response, retiming vector ignored")
+
+
+    new_circuit = input("Would you like to create a new circuit file?(y/n)")
+    if new_circuit == 'y':
+        retimed_circuit_file(parsed_info,new_c_value,retimed_matrix,new_file_path)
         print("Done!")
+    elif new_circuit == 'n':
+        print("Retiming unsuccessful")
     else:
         print("Invalid response, ending script")
-
-
-    new_file_path = 'retimed_circuit.txt'
-    retimed_circuit_file(parsed_info,new_c_value,retimed_matrix,new_file_path)

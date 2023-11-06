@@ -326,7 +326,7 @@ def retimed_circuit_file(circuit_info, new_c_value, retimed_matrix, new_file_pat
    
 # Run the thing and do the stuff 
 if __name__ == "__main__":
-    file_path_txt = 'example_input.txt'
+    file_path_txt = 'example_input2.txt'
     new_file_path = 'retimed_circuit.txt'
     parsed_info = parse_circuit_file(file_path_txt)
     last_gen = parsed_info.get("total_nodes")-1

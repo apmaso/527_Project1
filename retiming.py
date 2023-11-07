@@ -397,7 +397,7 @@ if __name__ == "__main__":
     if minimize == 'y':
         new_c_value = minimum_c
         print(f"Minimizing circuit with c = {new_c_value}")
-    elif user_input == 'n':
+    elif minimize == 'n':
         new_c_value = int(input("What new c_value would you like to try?"))
         print(f"Minimizing circuit with c = {new_c_value}")
     else:

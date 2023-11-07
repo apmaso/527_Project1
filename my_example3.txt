@@ -1,18 +1,17 @@
 // Specifies the total number of nodes in the graph
-TotalNodes=5
+TotalNodes=6
 
 // Specifies the delay for each node in the graph
-NodeDelays=2,1,2,2,1
+NodeDelays=1,1,2,2,3,2
 
 // Specifies the delay for each edge between nodes in the graph
 Edge12=3
-Edge13=3
 Edge23=2
 Edge34=0
-Edge35=0
 Edge45=1
-Edge41=0
-Edge51=4
+Edge46=0
+Edge52=1
+Edge61=1
 
 // Specifies the maximum clock cycle for the algorithm
 MaxClockCycle=6

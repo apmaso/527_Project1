@@ -326,8 +326,15 @@ def retimed_circuit_file(circuit_info, new_c_value, retimed_matrix, new_file_pat
    
 # Run the thing and do the stuff 
 if __name__ == "__main__":
+    
+    #############################################################
+    ## Usage:
+    ## Path for our circuit file and for the retimed circuit file
     file_path_txt = 'example_input.txt'
-    new_file_path = 'retimed_example_circuit.txt'
+    new_file_path = 'retimed_circuit.txt'
+    #############################################################
+
+
     parsed_info = parse_circuit_file(file_path_txt)
     last_gen = parsed_info.get("total_nodes")-1
     c_value = parsed_info.get("max_clock_cycle")
@@ -338,6 +345,10 @@ if __name__ == "__main__":
     gp_matrix = create_gpmatrix(parsed_info)
     d_matrix = create_dmatrix(parsed_info,w_matrix[last_gen],gp_matrix[last_gen])
     
+
+
+
+
     # Will need to call inequalities matrix as well as contraing
     # matrix calculation here to help group items for readability
 
@@ -378,10 +389,23 @@ if __name__ == "__main__":
     
     ineq_matrix = ineq_matrix(parsed_info,w_matrix[last_gen],d_matrix)
 
-    # TODO: This is not set up to handle inproper input
-    new_c_value = int(input("What new c_value would you like to try?"))
-    reduced_ineq = reduced_ineq(parsed_info,ineq_matrix,new_c_value)
+    
 
+    # Would you like to miminimize the clock period or set a different c value
+    minimize = input("Would you like to minimize the clock period?(y/n)")
+    minimum_c = max(node_delay)
+    if minimize == 'y':
+        new_c_value = minimum_c
+        print(f"Minimizing circuit with c = {new_c_value}")
+    elif user_input == 'n':
+        new_c_value = int(input("What new c_value would you like to try?"))
+        print(f"Minimizing circuit with c = {new_c_value}")
+    else:
+        new_c_value = minimum_c
+        print("Invalid response, minimizing circuit as default")
+        print(f"Minimizing circuit with c = {new_c_value}")
+
+    reduced_ineq = reduced_ineq(parsed_info,ineq_matrix,new_c_value)
 
     constraint_matrix = constraint_graph(parsed_info,reduced_ineq)
     

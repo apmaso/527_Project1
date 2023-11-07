@@ -361,7 +361,7 @@ if __name__ == "__main__":
         print(w_matrix[last_gen])
 
     print("----------------------------------------")
-    print("                G' Matrix               ")
+    print("                W' Matrix               ")
     print("----------------------------------------")
     if user_input == 'y':
         print(gp_matrix)

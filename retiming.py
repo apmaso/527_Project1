@@ -50,11 +50,11 @@ def create_wmatrix(circuit_info):
     """
 
     # Create a 3D array with 3 dimensions equal to the number of nodes
-    # Populate this 3D array with a high number as initial value (999)
+    # Populate this 3D array with a high number as initial value (9999)
     # This default value represents no path between the two nodes
     size = circuit_info.get("total_nodes")
     shape = (size,size,size)
-    fill_value = 999
+    fill_value = 9999
     w_matrix = np.full(shape,fill_value)
 
     # All elements where row == col should be zero
@@ -97,11 +97,11 @@ def create_gpmatrix(circuit_info):
     """
     
     # Create a 3D array with 3 dimensions equal to the number of nodes
-    # Populate this 3D array with a high number as initial value (999)
+    # Populate this 3D array with a high number as initial value (9999)
     # This default value represents no path between the two nodes
     size = circuit_info.get("total_nodes")
     shape = (size,size,size)
-    fill_value = 999
+    fill_value = 9999
     gp_matrix = np.full(shape,fill_value)
 
     # Initialize gp-matrix using edge_delays, node_delays and M 
@@ -136,7 +136,7 @@ def create_dmatrix(circuit_info, w_matrix, gp_matrix):
     """
     
     # Create a 3D array with 3 dimensions equal to the number of nodes
-    # Populate this 3D array with a high number as initial value (999)
+    # Populate this 3D array with a high number as initial value (9999)
     # This default value represents no path between the two nodes
     size = circuit_info.get("total_nodes")
     shape = (size,size)
@@ -144,7 +144,7 @@ def create_dmatrix(circuit_info, w_matrix, gp_matrix):
     # Initialize d-matrix 
     # All elements where row == col should be zero
     # U==V -> W(u,v)==0
-    fill_value = 999
+    fill_value = 9999
     d_matrix = np.full(shape,fill_value)
 
     node_delay = circuit_info.get("node_delays")
@@ -171,12 +171,12 @@ def ineq_matrix(circuit_info, w_matrix, d_matrix):
 
 
     # Create a 3D array with 3 dimensions equal to the number of nodes
-    # Populate this 3D array with a high number as initial value (999)
+    # Populate this 3D array with a high number as initial value (9999)
     # This array will be used to store the sets of inequalites created 
     # 1 axis will represent each new set of inequalites
     ineq_sets = c_value-max(node_delay)+2
     shape = (ineq_sets,size,size)
-    fill_value = 999
+    fill_value = 9999
     ineq_matrix = np.full(shape,fill_value)
 
 
@@ -222,11 +222,11 @@ def reduced_ineq(circuit_info, ineq_matrix, new_c_value):
 
 
     # Create a 2D array with 2 dimensions equal to the number of nodes
-    # Populate this 2D array with a high number as initial value (999)
+    # Populate this 2D array with a high number as initial value (9999)
     # This array will be used remove redundant inequalites
     sets_to_reduce = c_value - new_c_value + 2
     shape = (size,size)
-    fill_value = 999
+    fill_value = 9999
     reduced_ineq = np.full(shape,fill_value)
 
 
@@ -249,7 +249,7 @@ def reduced_ineq(circuit_info, ineq_matrix, new_c_value):
     
     for k in range(size):
         for l in range(size):
-            if reduced_ineq[k,l] != 999:
+            if reduced_ineq[k,l] != 9999:
                 print(f"r({k+1}) - r({l+1}) <= {reduced_ineq[k,l]}")
             else:
                 continue
@@ -268,7 +268,7 @@ def constraint_graph(circuit_info,ineq_matrix):
     # Trying with only 1 dimensions equal to the number of nodes+1
     size = circuit_info.get("total_nodes")
     shape = (size,size+1,size)
-    fill_value = 999
+    fill_value = 9999
     constraint_matrix = np.full(shape,fill_value)
 
 
@@ -406,9 +406,9 @@ if __name__ == "__main__":
     if retime == 'y':
         for r in range(size):
             for c in range(size):
-                if retimed_matrix[r,c] != 999:
+                if retimed_matrix[r,c] != 9999:
                     retimed_matrix[r,c] = retimed_matrix[r,c] - retiming_vector[r]
-                if retimed_matrix[c,r] != 999:
+                if retimed_matrix[c,r] != 9999:
                     retimed_matrix[c,r] = retimed_matrix[c,r] + retiming_vector[r]
         print("----------------------------------------")
         print("            Retimed Circuit             ")
